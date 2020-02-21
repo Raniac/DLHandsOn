@@ -1,6 +1,6 @@
 #include <vector>
 // #include "DataObject.h"
-#include "Shape.cpp"
+#include "Shape.hpp"
 
 namespace DLHandsOn {
     typedef std::vector<float> DataType;
