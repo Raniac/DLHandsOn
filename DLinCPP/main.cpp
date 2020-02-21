@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
-#include "DataObject.h"
-#include "Utilities.h"
+#include "DataObject.cpp"
+#include "Utilities.cpp"
 
 static void testDataObject() {
     DLHandsOn::DataObject();

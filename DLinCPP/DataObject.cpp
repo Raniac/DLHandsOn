@@ -1,9 +1,26 @@
 #include <vector>
-#include "DataObject.h"
-#include "Shape.h"
+// #include "DataObject.h"
+#include "Shape.cpp"
 
 namespace DLHandsOn {
     typedef std::vector<float> DataType;
+
+    class DataObject {
+    public:
+        DataObject();
+        // DataObject(const Shape& newShape);
+        ~DataObject();
+    public: // member functions
+        bool empty() const;
+        void clear();
+        void reshape(const Shape& newShape);
+        Shape getShape() const;
+        DataType& getData();
+        void fillValue(const float val);
+    private:
+        DataType data;
+        Shape shape;
+    };
 
     DataObject::DataObject() : data(), shape() {}
 

@@ -1,6 +1,18 @@
-#include "Shape.h"
+// #include "Shape.h"
 
 namespace DLHandsOn {
+    class Shape {
+    public:
+        Shape();
+        ~Shape();
+    public:
+        int getTotal() const;
+        int getDims() const;
+        void clear();
+    private:
+        std::vector<int> shape;
+    };
+
     Shape::Shape() : shape() {}
 
     Shape::~Shape() {}
