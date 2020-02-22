@@ -1,12 +1,16 @@
+#pragma once
 #include <vector>
+#include "Utilities.hpp"
 
 namespace DLHandsOn {
     class Shape {
     public:
         Shape();
+        Shape(const std::initializer_list<int> items);
         ~Shape();
     public:
         int getTotal() const;
+        int getSize(const int index) const;
         int getDims() const;
         void clear();
     private:
@@ -14,6 +18,8 @@ namespace DLHandsOn {
     };
 
     Shape::Shape() : shape() {}
+
+    Shape::Shape(const std::initializer_list<int> val) { shape = val; }
 
     Shape::~Shape() {}
 
@@ -25,6 +31,11 @@ namespace DLHandsOn {
         }
         return total;
     }
+
+    int Shape::getSize(const int index) const {
+		assert(index >= 0 && index < shape.size(), "Invalid index.");
+		return shape[index];
+	}
 
     int Shape::getDims() const { return (int)shape.size(); }
 

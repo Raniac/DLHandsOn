@@ -1,14 +1,13 @@
+#pragma once
 #include <vector>
-// #include "DataObject.h"
+#include "General.hpp"
 #include "Shape.hpp"
 
 namespace DLHandsOn {
-    typedef std::vector<float> DataType;
-
     class DataObject {
     public:
         DataObject();
-        // DataObject(const Shape& newShape);
+        DataObject(const Shape& newShape);
         ~DataObject();
     public: // member functions
         bool empty() const;
@@ -16,6 +15,7 @@ namespace DLHandsOn {
         void reshape(const Shape& newShape);
         Shape getShape() const;
         DataType& getData();
+        const DataType& getData() const;
         void fillValue(const float val);
     private:
         DataType data;
@@ -24,7 +24,7 @@ namespace DLHandsOn {
 
     DataObject::DataObject() : data(), shape() {}
 
-    // DataObject::DataObject(const Shape& newShape) {}
+    DataObject::DataObject(const Shape& newShape) { reshape(newShape); }
 
     DataObject::~DataObject() {}
 
@@ -45,7 +45,9 @@ namespace DLHandsOn {
 
     DataType& DataObject::getData() { return data; }
 
+    const DataType& DataObject::getData() const { return data; }
+
     void DataObject::fillValue(const float val) {
         std::fill(data.begin(), data.end(), val);
     }
-}
+} // namespace DLHandsOn
