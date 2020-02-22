@@ -28,7 +28,7 @@ namespace DLHandsOn {
     
     private:
         DataObject weights;
-        DataObject weight_grad;
+        DataObject weights_grad;
         DataObject bias;
         DataObject bias_grad;
     };
@@ -40,7 +40,7 @@ namespace DLHandsOn {
     void DenseLayer::setup(const int input_size, const int output_size, const bool with_bias) {
         weights.reshape(Shape({ input_size, output_size }));
         if (getPhase() == Phase::Train) {
-            weight_grad.reshape(weights.getShape());
+            weights_grad.reshape(weights.getShape());
         }
 
         if (with_bias) {
@@ -57,7 +57,7 @@ namespace DLHandsOn {
 
         // initiate grads
         if (getPhase() == Phase::Train) {
-            constantFiller(weight_grad.getData(), 0.0f);
+            constantFiller(weights_grad.getData(), 0.0f);
             constantFiller(bias_grad.getData(), 0.0f);
         }
     }
@@ -74,7 +74,7 @@ namespace DLHandsOn {
     }
     std::vector<DataObject*> DenseLayer::getAllGrads() {
         std::vector<DataObject*> all_grads;
-        all_grads.push_back(&weight_grad);
+        all_grads.push_back(&weights_grad);
         all_grads.push_back(&bias_grad);
         return all_grads;}
 
@@ -133,8 +133,52 @@ namespace DLHandsOn {
         }
     }
 
+    // backward propagation
     // dy/dx = w, dy/dw = x, dy/db = 1
-    void DenseLayer::backward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& outputs, std::vector<DataObject*>& prevDiffs, std::vector<DataObject*>& nextDiffs) {
-        // backward propagation
+    void DenseLayer::backward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& outputs, std::vector<DataObject*>& prev_diffs, std::vector<DataObject*>& next_diffs) {
+        // assertion
+        assert(inputs.size() == outputs.size(), "Invalid inputs and outputs size.");
+        assert(prev_diffs.size() == inputs.size(), "Invalid inputs and diffs size.");
+        assert(next_diffs.size() == outputs.size(), "Invalid diffs and outputs size.");
+        assert(inputs.size() > 0, "Invalid inputs size.");
+
+        // for each input do
+        for (size_t i = 0; i < inputs.size(); i++) {
+            const DataObject& input = *inputs[i];
+            DataObject& prev_diff = *prev_diffs[i];
+            const DataObject& next_diff = *next_diffs[i];
+            const DataObject& output = *outputs[i];
+
+            const Shape& input_shape = input.getShape();
+            const Shape& output_shape = output.getShape();
+            const Shape& weights_shape = weights.getShape();
+            const Shape& bias_shape = bias.getShape();
+
+            // TODO: figure out what diff is and what it does with grad
+            const Shape& weights_grad_shape = weights_grad.getShape();
+            const Shape& bias_grad_shape = bias_grad.getShape();
+            const Shape& prev_diff_shape = prev_diff.getShape();
+            const Shape& next_diff_shape = next_diff.getShape();
+
+            const int input_size = input_shape.getSize(1);
+            const int diff_size = input_size;
+            const int output_size = output_shape.getSize(1);
+
+            // validate shapes
+            // shape of input: (N, input_size)
+            // shape of output: (N, output_size)
+            // shape of weights: (input_size, output_size)
+            // shape of bias: (output_size)
+            assert(input_shape.getDims() == output_shape.getDims() &&
+                input_shape.getSize(0) == output_shape.getSize(0) &&
+                input_size == weights_shape.getSize(0) &&
+                output_size == weights_shape.getSize(1) &&
+                weights_grad_shape == weights_shape &&
+                bias_grad_shape == bias_shape &&
+                prev_diff_shape == input_shape &&
+                next_diff_shape == output_shape &&
+                (bias.empty() ? true : output_size == bias_shape.getSize(0)),
+                "Invalid dimensions.");
+        }
     }
 } // namespace DLHandsOn

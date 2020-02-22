@@ -13,6 +13,7 @@ namespace DLHandsOn {
         int getSize(const int index) const;
         int getDims() const;
         void clear();
+        bool operator==(const Shape& other) const;
     private:
         std::vector<int> shape;
     };
@@ -40,4 +41,8 @@ namespace DLHandsOn {
     int Shape::getDims() const { return (int)shape.size(); }
 
     void Shape::clear() { shape.clear(); }
+
+    bool Shape::operator==(const Shape& other) const {
+		return this->shape == other.shape;
+	}
 } // namespace DLHandsOn

@@ -10,8 +10,8 @@ namespace DLHandsOn {
             Train,
             Test
         };
-        inline void setPhase(const Phase phase) { this->phase = phase; }
-        inline Phase getPhase() const { return this->phase; }
+        void setPhase(const Phase phase) { this->phase = phase; }
+        Phase getPhase() const { return this->phase; }
 
         // get all the weights of this layer
         virtual std::vector<DataObject*> getAllWeights() = 0;
