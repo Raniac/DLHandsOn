@@ -5,11 +5,12 @@
 #include "DenseLayer.hpp"
 #include "Utilities.hpp"
 
-static void printData(const DLHandsOn::DataObject& data) {
+static void printData(std::string data_info, const DLHandsOn::DataObject& data) {
+    std::cout << data_info << std::endl << "[ ";
     for (auto d : data.getData()) {
         std::cout << d << " ";
     }
-    std::cout << std::endl;
+    std::cout << "]" << std::endl;
 }
 
 static void testDenseLayer() {
@@ -21,22 +22,23 @@ static void testDenseLayer() {
     input.fillValue(0.5f);
     DLHandsOn::DataObject output(DLHandsOn::Shape({ batch_size, output_size }));
     output.fillValue(0.0f);
-    printData(input);
-    printData(output);
+    printData("Input Data Before Dense:", input);
+    printData("Output Data Before Dense:", output);
     const std::vector<DLHandsOn::DataObject*> inputs{ &input };
     std::vector<DLHandsOn::DataObject*> outputs{ &output };
 
     DLHandsOn::DenseLayer denseLayer;
     denseLayer.setup(input_size, output_size, true);
-    printData(denseLayer.getWeight());
-    printData(denseLayer.getBias());
+    printData("Initialized Weights:", denseLayer.getWeight());
+    printData("Initialized Bias:", denseLayer.getBias());
 
     denseLayer.forward(inputs, outputs);
-    printData(input);
-    printData(output);
+    printData("Input Data After Dense:", input);
+    printData("Output Data After Dense:", output);
 }
 
 int main() {
+    std::cout << "Deep Learning Hands-On!" << std::endl;
     testDenseLayer();
     return 0;
 }
