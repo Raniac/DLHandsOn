@@ -13,7 +13,7 @@ namespace DLHandsOn {
                    const int output_dim,
                    const bool with_bias);
 
-        const DataObject& getWeight() const;
+        const DataObject& getWeights() const;
         const DataObject& getBias() const;
         
         virtual std::vector<DataObject*> getAllWeights();
@@ -23,8 +23,8 @@ namespace DLHandsOn {
                              std::vector<DataObject*>& outputs);
         virtual void backward(const std::vector<DataObject*>& inputs,
                               std::vector<DataObject*>& outputs,
-                              std::vector<DataObject*>& prev_diffs,
-                              std::vector<DataObject*>& next_diffs);
+                              std::vector<DataObject*>& input_diffs,
+                              std::vector<DataObject*>& output_diffs);
     
     private:
         DataObject weights;
@@ -39,13 +39,15 @@ namespace DLHandsOn {
 
     void DenseLayer::setup(const int input_size, const int output_size, const bool with_bias) {
         weights.reshape(Shape({ input_size, output_size }));
-        if (getPhase() == Phase::Train) {
+        this->setPhase(Phase::Train);
+        DLHandsOn::assert(this->getPhase() == Phase::Train, "Not Training!");
+        if (this->getPhase() == Phase::Train) {
             weights_grad.reshape(weights.getShape());
         }
 
         if (with_bias) {
             bias.reshape(Shape({ output_size }));
-            if (getPhase() == Phase::Test) bias_grad.reshape(bias.getShape());
+            if (this->getPhase() == Phase::Train) { bias_grad.reshape(bias.getShape()); }
         }
         else bias.clear();
 
@@ -56,13 +58,13 @@ namespace DLHandsOn {
         constantFiller(bias.getData(), 0.0f);
 
         // initiate grads
-        if (getPhase() == Phase::Train) {
+        if (this->getPhase() == Phase::Train) {
             constantFiller(weights_grad.getData(), 0.0f);
             constantFiller(bias_grad.getData(), 0.0f);
         }
     }
 
-    const DataObject& DenseLayer::getWeight() const { return weights; }
+    const DataObject& DenseLayer::getWeights() const { return weights; }
 
     const DataObject& DenseLayer::getBias() const { return bias; }
 
@@ -134,19 +136,24 @@ namespace DLHandsOn {
     }
 
     // backward propagation
+    // let total loss, since
     // dy/dx = w, dy/dw = x, dy/db = 1
-    void DenseLayer::backward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& outputs, std::vector<DataObject*>& prev_diffs, std::vector<DataObject*>& next_diffs) {
+    // then
+    // dloss/dx = dloss/dy * dy/dx = dloss/dy * w
+    // dloss/dw = dloss/dy * dy/dw = dloss/dy * x
+    // dloss/db = dloss/dy * dy/db = dloss/dy * 1
+    void DenseLayer::backward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& outputs, std::vector<DataObject*>& input_diffs, std::vector<DataObject*>& output_diffs) {
         // assertion
         assert(inputs.size() == outputs.size(), "Invalid inputs and outputs size.");
-        assert(prev_diffs.size() == inputs.size(), "Invalid inputs and diffs size.");
-        assert(next_diffs.size() == outputs.size(), "Invalid diffs and outputs size.");
+        assert(input_diffs.size() == inputs.size(), "Invalid inputs and diffs size.");
+        assert(output_diffs.size() == outputs.size(), "Invalid diffs and outputs size.");
         assert(inputs.size() > 0, "Invalid inputs size.");
 
         // for each input do
         for (size_t i = 0; i < inputs.size(); i++) {
             const DataObject& input = *inputs[i];
-            DataObject& prev_diff = *prev_diffs[i];
-            const DataObject& next_diff = *next_diffs[i];
+            DataObject& input_diff = *input_diffs[i];
+            const DataObject& output_diff = *output_diffs[i];
             const DataObject& output = *outputs[i];
 
             const Shape& input_shape = input.getShape();
@@ -157,8 +164,8 @@ namespace DLHandsOn {
             // TODO: figure out what diff is and what it does with grad
             const Shape& weights_grad_shape = weights_grad.getShape();
             const Shape& bias_grad_shape = bias_grad.getShape();
-            const Shape& prev_diff_shape = prev_diff.getShape();
-            const Shape& next_diff_shape = next_diff.getShape();
+            const Shape& input_diff_shape = input_diff.getShape();
+            const Shape& output_diff_shape = output_diff.getShape();
 
             const int input_size = input_shape.getSize(1);
             const int diff_size = input_size;
@@ -175,10 +182,62 @@ namespace DLHandsOn {
                 output_size == weights_shape.getSize(1) &&
                 weights_grad_shape == weights_shape &&
                 bias_grad_shape == bias_shape &&
-                prev_diff_shape == input_shape &&
-                next_diff_shape == output_shape &&
+                input_diff_shape == input_shape &&
+                output_diff_shape == output_shape &&
                 (bias.empty() ? true : output_size == bias_shape.getSize(0)),
                 "Invalid dimensions.");
+
+            // define results
+            const DataType& input_data = input.getData();
+            DataType& input_diff_data = input_diff.getData();
+            const DataType& output_diff_data = output_diff.getData();
+            const DataType& output_data = output.getData();
+            const DataType& weights_data = weights.getData();
+            const DataType& bias_data = bias.getData();
+            DataType& weights_grad_data = weights_grad.getData();
+            DataType& bias_grad_data = bias_grad.getData();
+            
+            const int batch_size = input_shape.getSize(0);
+            // dy/dx = w: used for back propagation
+            // dy: output_diff
+            // dx: input_diff
+            for (size_t j = 0; j < batch_size; j++) {
+                for (size_t k = 0; k < input_size; k++) {
+                    for (size_t l = 0; l < output_size; l++) {
+                        // dloss/dx = dloss/dy * dy/dx = dloss/dy * w
+                        input_diff_data[j * input_size + k] += weights_data[k * output_size + l] * output_diff_data[j * output_size + l];
+                    }
+                }
+            }
+
+            // dy/dw = x: used for weights updating
+            weights_grad.fillValue(0.0f);
+            for (size_t j = 0; j < batch_size; j++) {
+                for (size_t k = 0; k < input_size; k++) {
+                    for (size_t l = 0; l < output_size; l++) {
+                        // dloss/dw = dloss/dy * dy/dw = dloss/dy * x
+                        weights_grad_data[k * output_size + l] += input_data[j * input_size + k] * output_diff_data[j * output_size + l];
+                    }
+                }
+            }
+            for (size_t m = 0; m < weights_grad.getShape().getTotal(); m++) {
+                weights_grad_data[m] /= batch_size;
+            }
+
+            if (!bias.empty()) {
+                // dy/db = 1: used for bias updating
+                for (size_t j = 0; j < batch_size; j++) {
+                    for (size_t k = 0; k < input_size; k++) {
+                        for (size_t l = 0; l < output_size; l++) {
+                            // dloss/db = dloss/dy * dy/db = dloss/dy * 1
+                            bias_grad_data[j * output_size + l] += 1.0f * output_diff_data[j * output_size + l];
+                        }
+                    }
+                }
+                for (size_t m = 0; m < bias_grad.getShape().getTotal(); m++) {
+                    bias_grad_data[m] /= batch_size;
+                }
+            }
         }
     }
 } // namespace DLHandsOn

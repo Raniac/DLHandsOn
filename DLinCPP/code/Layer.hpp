@@ -30,6 +30,6 @@ namespace DLHandsOn {
                               std::vector<DataObject*>& next_diffs) = 0;
 
     private:
-        Phase phase = Phase::Test;
+        Phase phase;
     };
 } // namespace DLHandsOn
