@@ -86,10 +86,16 @@ torch.manual_seed(SEED)
 torch.cuda.manual_seed_all(SEED)
 
 ## Create dataset with multiple data
-# train_dataset, test_dataset = fromPickle2Dataset('/workspace/schizo_graph_net/data/bennyray_191107_347_bcn.pkl')
-# train_dataset, test_dataset = fromPickle2DatasetWithFeature('/workspace/schizo_graph_net/data/bennyray_191107_347_bcn.pkl', '/workspace/schizo_graph_net/data/RANIAC_181210_345_sfMRI_90.csv')
-# train_dataset, test_dataset = fromTxt2Dataset('/workspace/schizo_graph_net/data/ByDPABI/')
-train_dataset, test_dataset = fromTxt2DatasetWithFeature(DATA_PATH + 'data/test_dpabi/', DATA_PATH + 'data/RANIAC_181210_345_sfMRI_90.csv')
+# train_dataset, test_dataset = fromTxt2DatasetWithFeature(DATA_PATH + 'data/test_dpabi/', DATA_PATH + 'data/RANIAC_181210_345_sfMRI_90.csv')
+with open('data/train_dataset.pkl', 'rb') as f:
+    train_dataset = pickle.load(f)
+with open('data/test_dataset.pkl', 'rb') as f:
+    test_dataset = pickle.load(f)
+
+# with open('data/train_dataset.pkl', 'wb') as f:
+#     pickle.dump(train_dataset, f)
+# with open('data/test_dataset.pkl', 'wb') as f:
+#     pickle.dump(test_dataset, f)
 
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
