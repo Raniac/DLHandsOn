@@ -81,8 +81,10 @@ static void testSigmoidLayer() {
     printData("Input Diff After Dense Back Propagation:", input_diff);
 }
 
+static void testNetwork() {}
+
 int main() {
     std::cout << "Deep Learning Hands-On!" << std::endl;
-    testSigmoidLayer();
+    testNetwork();
     return 0;
 }
