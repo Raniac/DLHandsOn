@@ -9,8 +9,8 @@ namespace DLHandsOn {
         virtual ~DenseLayer();
     public:
         // setup layer
-        void setup(const int input_dim,
-                   const int output_dim,
+        void setup(const int input_size,
+                   const int output_size,
                    const bool with_bias);
 
         const DataObject& getWeights() const;
