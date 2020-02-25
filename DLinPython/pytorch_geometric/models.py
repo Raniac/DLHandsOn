@@ -27,7 +27,7 @@ class Net_191106(torch.nn.Module):
 
         return F.log_softmax(x, dim=1)
 
-# Graph Convolutional Network
+## Graph Convolutional Network
 class GCNNet(torch.nn.Module):
     def __init__(self):
         super(GCNNet, self).__init__()
@@ -44,7 +44,7 @@ class GCNNet(torch.nn.Module):
 
         return F.log_softmax(x, dim=1)
 
-# Graph Attention Network
+## Graph Attention Network
 class GATNet(torch.nn.Module):
     def __init__(self):
         super(GATNet, self).__init__()
@@ -62,7 +62,10 @@ class GATNet(torch.nn.Module):
 
         return F.log_softmax(x, dim=1)
 
-# Graph Isomorphism Network
+## Graph Isomorphism Network
+"""
+GIN achieves maximal discriminative power by using injective neighbor aggregation.
+"""
 class GIN(torch.nn.Module):
     def __init__(self):
         super(GIN, self).__init__()
