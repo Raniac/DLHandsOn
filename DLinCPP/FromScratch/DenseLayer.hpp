@@ -19,6 +19,8 @@ namespace DLHandsOn {
         virtual std::vector<DataObject*> getAllWeights();
         virtual std::vector<DataObject*> getAllGrads();
 
+        // TODO: add updateWeights function
+
         virtual void forward(const std::vector<DataObject*>& inputs,
                              std::vector<DataObject*>& outputs);
         virtual void backward(const std::vector<DataObject*>& inputs,

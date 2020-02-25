@@ -33,13 +33,15 @@ namespace DLHandsOn {
         this->loss_function = loss_function;
     }
 
+    // TODO: use loss function to get loss
     float Network::getLoss(const std::vector<DataObject*>& ground_truth, const std::vector<DataObject*>& predictions) {}
 
+    // TODO: call forward function of each layer
     void Network::forward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& predictions) {}
 
+    // TODO: call backward function of each layer
     void Network::backward(const std::vector<DataObject*>& inputs, const std::vector<DataObject*>& ground_truth) {}
 
+    // TODO: update hidden layers' weights
     void Network::updateWeights() {}
-
-    bool Network::saveModel(const std::string& model_path) const {}
 } // namespace DLHandsOn

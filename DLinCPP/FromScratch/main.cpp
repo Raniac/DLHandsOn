@@ -136,14 +136,14 @@ static void demoTrain() {
     for (size_t i = 0; i < num_epochs; i++) {
         for (size_t j = 0; j < batch_size; j++) {
 
-			//forward
+			// TODO: forward
 			network.forward(inputs, outputs);
-			//backward
+			// TODO: backward
 			network.backward(inputs, ground_truths);
-			//update weights
+			// TODO: update weights
 			network.updateWeights();
 
-			//get loss
+			// TODO: get loss
 			const float loss = network.getLoss(ground_truths, outputs);
 			std::cout << "Epoch[" << i <<"/" << num_epochs <<  "] " <<
 				"Batch[" << j << "/" << batch_size << "] " << 
