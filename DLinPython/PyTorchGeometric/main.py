@@ -19,11 +19,11 @@ from models import *
 SEED          = 1 # seed for random state
 DATA_PATH     = '' # where to locate the data
 LOG_PATH      = 'logs/test.log' # where to save the log
-BATCH_SIZE    = 10 # batch size of data loader
+BATCH_SIZE    = 1 # batch size of data loader
 LEARNING_RATE = 1e-1 # initial learning rate
-LR_STEP_SIZE  = 20 # epochs before each lr decay
-LR_DECAY      = 0.4 # multiplied by for lr decay
-NUM_EPOCHS    = 100 # number of epochs for training
+LR_STEP_SIZE  = 10 # epochs before each lr decay
+LR_DECAY      = 0.1 # multiplied by for lr decay
+NUM_EPOCHS    = 20 # number of epochs for training
 
 def train(device, model, optimizer, data_loader, data_size):
     model.train()
@@ -107,7 +107,7 @@ else:
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # model = Net_191225().to(device)
-model = GIN().to(device)
+model = DiffPool(2, 16).to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
