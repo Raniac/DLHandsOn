@@ -1,16 +1,21 @@
 # DEEP LEARNING IN C++
 
-## General
+## FromScratch
 
-## Utilities
-
-## Shape
-
-## DataObject
-
-## Layer
-
-## DenseLayer
+- General
+  - Definition ```DataType```
+- Utilities
+  - Function ```assert()```
+- Shape
+- DataObject
+- Layer
+- InputLayer
+- DenseLayer
+- ActivationLayer
+  - Object ```SigmoidLayer```
+- LossFunction
+- Optimizer
+- Network
 
 ## C++ Programming
 
