@@ -3,11 +3,19 @@ from math import ceil
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn import Sequential as Seq, \
+                     Linear as Lin, \
+                     ReLU
+
 import torch_geometric.transforms as T
-from torch.nn import Sequential as Seq, Linear as Lin, ReLU
-from torch_geometric.nn import GCNConv, GATConv, GINConv
-from torch_geometric.nn import global_mean_pool, global_max_pool, avg_pool_x
-from torch_geometric.nn import dense_diff_pool
+from torch_geometric.nn import GCNConv, \
+                               GATConv, \
+                               GINConv, \
+                               DenseSAGEConv, \
+                               global_mean_pool, \
+                               global_max_pool, \
+                               avg_pool_x, \
+                               dense_diff_pool
 
 from torch_geometric.utils import add_self_loops
 
@@ -88,33 +96,6 @@ class GIN(torch.nn.Module):
 ## Hierarchical Graph Representation Learning with Differentiable Pooling
 ## https://arxiv.org/abs/1806.08804
 # TODO: study on GDP inputs parameters
-class DPNet(torch.nn.Module):
-    def __init__(self):
-        super(DPNet, self).__init__()
-        self.conv1 = GCNConv(4, 90)
-        self.conv2 = GCNConv(90, 4)
-
-    def forward(self, data):
-        x, adj, edge_index, batch = data.x, data.adj, data.edge_index, data.batch
-
-        x = self.conv1(x, edge_index)
-        x = F.relu(x)
-        # x = F.dropout(x, p=0.5, training=self.training)
-
-        # DiffPool
-        cluster = torch.tensor([i % 90 for i in range(900)], dtype=torch.long)
-        s, _ = avg_pool_x(cluster, x, batch)
-        for i in range(10):
-            x[i*90:(i+1)*90], _, _, _ = dense_diff_pool(x[i*90:(i+1)*90], adj[i*90:(i+1)*90], s)
-
-        x = self.conv2(x, edge_index)
-        x = global_mean_pool(x, batch)
-
-        return F.log_softmax(x, dim=1)
-
-from torch.nn import Linear
-from torch_geometric.nn import DenseSAGEConv, dense_diff_pool
-
 
 class Block(torch.nn.Module):
     def __init__(self, in_channels, hidden_channels, out_channels):
@@ -136,7 +117,6 @@ class Block(torch.nn.Module):
         x2 = F.relu(self.conv2(x1, adj, mask, add_loop))
         return self.lin(torch.cat([x1, x2], dim=-1))
 
-
 class DiffPool(torch.nn.Module):
     def __init__(self, num_layers, hidden):
         super(DiffPool, self).__init__()
@@ -154,8 +134,8 @@ class DiffPool(torch.nn.Module):
             self.embed_blocks.append(Block(hidden, hidden, hidden))
             self.pool_blocks.append(Block(hidden, hidden, num_nodes))
 
-        self.lin1 = Linear((len(self.embed_blocks) + 1) * hidden, hidden)
-        self.lin2 = Linear(hidden, num_classes)
+        self.lin1 = Lin((len(self.embed_blocks) + 1) * hidden, hidden)
+        self.lin2 = Lin(hidden, num_classes)
 
     def reset_parameters(self):
         self.embed_block1.reset_parameters()
