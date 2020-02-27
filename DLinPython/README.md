@@ -33,5 +33,6 @@ docker run -it --rm -v /c/Users/Benny/Documents/Projects/DLHandsOn/DLinPython/Py
 
 ## Appendix
 
-- GATConv Doc
-![GATConv Doc](PyTorchGeometric/docs/GATConv.png)
+- [```torch_geometric.nn.GATConv```](PyTorchGeometric/docs/GATConv.png)
+- [```torch_geometric.nn.GINConv```](PyTorchGeometric/docs/GINConv.png)
+- [```torch_geometric.nn.dense_diff_pool```](PyTorchGeometric/docs/dense_diff_pool.png)
