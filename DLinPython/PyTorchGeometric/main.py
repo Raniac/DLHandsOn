@@ -21,9 +21,9 @@ DATA_PATH     = '' # where to locate the data
 LOG_PATH      = 'logs/test.log' # where to save the log
 BATCH_SIZE    = 10 # batch size of data loader
 LEARNING_RATE = 1e-1 # initial learning rate
-LR_STEP_SIZE  = 10 # epochs before each lr decay
-LR_DECAY      = 0.1 # multiplied by for lr decay
-NUM_EPOCHS    = 30 # number of epochs for training
+LR_STEP_SIZE  = 20 # epochs before each lr decay
+LR_DECAY      = 0.4 # multiplied by for lr decay
+NUM_EPOCHS    = 100 # number of epochs for training
 
 def train(device, model, optimizer, data_loader, data_size):
     model.train()
@@ -85,17 +85,17 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 torch.cuda.manual_seed_all(SEED)
 
-## Create dataset with multiple data
+# Create dataset with multiple data
 # train_dataset, test_dataset = fromTxt2DatasetWithFeature(DATA_PATH + 'data/test_dpabi/', DATA_PATH + 'data/RANIAC_181210_345_sfMRI_90.csv')
-with open('data/train_dataset.pkl', 'rb') as f:
-    train_dataset = pickle.load(f)
-with open('data/test_dataset.pkl', 'rb') as f:
-    test_dataset = pickle.load(f)
-
-# with open('data/train_dataset.pkl', 'wb') as f:
+# with open('data/train_dataset_0227.pkl', 'wb') as f:
 #     pickle.dump(train_dataset, f)
-# with open('data/test_dataset.pkl', 'wb') as f:
+# with open('data/test_dataset_0227.pkl', 'wb') as f:
 #     pickle.dump(test_dataset, f)
+
+with open('data/train_dataset_0227.pkl', 'rb') as f:
+    train_dataset = pickle.load(f)
+with open('data/test_dataset_0227.pkl', 'rb') as f:
+    test_dataset = pickle.load(f)
 
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)

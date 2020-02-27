@@ -36,7 +36,10 @@ def fromConnMat2Edges(conn_mat, label, node_feat):
 
     y = torch.tensor([label], dtype=torch.long)
 
-    data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, y=y)
+    # TODO add adjacency matrix to data object
+    adj = torch.tensor(conn_mat, dtype=torch.float)
+
+    data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, y=y, adj=adj)
     return data
 
 def fromPickle2Dataset(pkl_path):
