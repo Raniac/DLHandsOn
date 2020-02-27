@@ -30,6 +30,11 @@ docker run -it --rm -v /c/Users/Benny/Documents/Projects/DLHandsOn/DLinPython/Py
 - [推荐系统中召回策略](https://www.cnblogs.com/graybird/p/11393511.html)
 - [CIKM 2019 EComm AI：超大规模推荐之用户兴趣高效检索 赛题解读及阿里深度树匹配技术实践](https://tianchi.aliyun.com/course/video?spm=5176.12586971.1001.45.4ee274a3LPTFrh&liveId=41072)
 - [CIKM 2019 EComm AI：用户行为预测 赛题解读与阿里GNN推荐结合实践分享](https://tianchi.aliyun.com/course/video?spm=5176.12586971.1001.50.6fc147c4o8k4tC&liveId=41071)
+- Docker Image
+
+```bash
+docker run -it --rm -v /c/Users/Benny/Documents/Projects/DLHandsOn/DLinPython/TIANCHI/FreshCompOffline:/workspace imcomking/pytorch_geometric:latest /bin/bash
+```
 
 ## Appendix
 
