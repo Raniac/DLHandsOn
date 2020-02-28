@@ -1,5 +1,5 @@
 # Deep Learning Hands-On
 
-## Deep Learning in CPP
+## [DEEP LEARNING IN C++](https://github.com/Raniac/DLHandsOn/tree/master/DLinCPP)
 
-## Deep Learning in Python
+## [Deep Learning in Python](https://github.com/Raniac/DLHandsOn/tree/master/DLinPython)
