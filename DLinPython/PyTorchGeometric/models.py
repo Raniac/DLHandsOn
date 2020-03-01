@@ -51,9 +51,10 @@ class GCNNet(torch.nn.Module):
         x = self.conv1(x, edge_index)
         x = F.relu(x)
         x = self.conv2(x, edge_index)
+        feature_after_conv2 = x # output feature after conv2
         x = global_mean_pool(x, batch)
 
-        return F.log_softmax(x, dim=1)
+        return F.log_softmax(x, dim=1), feature_after_conv2
 
 ## Graph Attention Network
 class GATNet(torch.nn.Module):

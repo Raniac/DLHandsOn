@@ -19,11 +19,11 @@ from models import *
 SEED          = 1 # seed for random state
 DATA_PATH     = '' # where to locate the data
 LOG_PATH      = 'logs/test.log' # where to save the log
-BATCH_SIZE    = 1 # batch size of data loader
-LEARNING_RATE = 1e-1 # initial learning rate
-LR_STEP_SIZE  = 10 # epochs before each lr decay
-LR_DECAY      = 0.1 # multiplied by for lr decay
-NUM_EPOCHS    = 20 # number of epochs for training
+BATCH_SIZE    = 10 # batch size of data loader
+LEARNING_RATE = 5e-2 # initial learning rate
+LR_STEP_SIZE  = 60 # epochs before each lr decay
+LR_DECAY      = 0.2 # multiplied by for lr decay
+NUM_EPOCHS    = 44 # number of epochs for training
 
 def train(device, model, optimizer, data_loader, data_size):
     model.train()
@@ -33,7 +33,7 @@ def train(device, model, optimizer, data_loader, data_size):
     for data in data_loader:
         data = data.to(device)
         optimizer.zero_grad()
-        out = model(data)
+        out, _ = model(data)
         loss = F.nll_loss(out, data.y)
         loss.backward()
         total_loss += loss.item() * data.num_graphs
@@ -56,7 +56,7 @@ def test(device, model, data_loader, data_size):
     for data in data_loader:
         data = data.to(device)
         with torch.no_grad():
-            out = model(data)
+            out, _ = model(data)
             loss = F.nll_loss(out, data.y)
         total_loss += loss.item() * data.num_graphs
         predicted_y.extend(out.max(dim=1)[1])
@@ -107,7 +107,7 @@ else:
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # model = Net_191225().to(device)
-model = DiffPool(2, 16).to(device)
+model = GCNNet().to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
@@ -136,3 +136,9 @@ for idx in range(len(test_out[0])):
 print(test_out[0])
 print(test_out[1])
 print(test_check)
+
+model_state = {
+    'state_dict': model.state_dict(),
+    'optimizer': optimizer.state_dict()
+}
+torch.save(model_state, 'models/checkpoints/test.pth')
