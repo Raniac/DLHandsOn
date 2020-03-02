@@ -1,6 +1,7 @@
 #pragma once
 #include "Layer.hpp"
 #include "Utilities.hpp"
+#include "Optimizer.hpp"
 
 namespace DLHandsOn {
     class DenseLayer : public Layer {
@@ -20,6 +21,7 @@ namespace DLHandsOn {
         virtual std::vector<DataObject*> getAllGrads();
 
         // TODO: add updateWeights function
+        virtual void updateWeights(Optimizer* optimizer, int alpha);
 
         virtual void forward(const std::vector<DataObject*>& inputs,
                              std::vector<DataObject*>& outputs);
@@ -80,7 +82,13 @@ namespace DLHandsOn {
         std::vector<DataObject*> all_grads;
         all_grads.push_back(&weights_grad);
         all_grads.push_back(&bias_grad);
-        return all_grads;}
+        return all_grads;
+    }
+
+    void DenseLayer::updateWeights(Optimizer* optimizer, int alpha) {
+        optimizer->gradientDescent(weights, weights_grad, alpha);
+        optimizer->gradientDescent(bias, bias_grad, alpha);
+    }
 
     // forward inference
     // y = w * x + b
