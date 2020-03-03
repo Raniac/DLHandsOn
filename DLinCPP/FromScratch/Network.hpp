@@ -34,10 +34,20 @@ namespace DLHandsOn {
     }
 
     // TODO: use loss function to get loss
-    float Network::getLoss(const std::vector<DataObject*>& ground_truth, const std::vector<DataObject*>& predictions) {}
+    float Network::getLoss(const std::vector<DataObject*>& ground_truth, const std::vector<DataObject*>& predictions) {
+        return loss_function->computeLoss(ground_truth, predictions);
+    }
 
-    // TODO: call forward function of each layer
-    void Network::forward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& predictions) {}
+    // TODO: set input size and output size for each layer separately
+    void Network::forward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& predictions) {
+        std::vector<DataObject*> temp_inputs = inputs;
+        std::vector<DataObject*> temp_outputs = predictions;
+        for (auto layer : layers) {
+            layer->forward(temp_inputs, temp_outputs);
+            temp_inputs = temp_outputs;
+        }
+        predictions = temp_outputs;
+    }
 
     // TODO: call backward function of each layer
     void Network::backward(const std::vector<DataObject*>& inputs, const std::vector<DataObject*>& ground_truth) {}

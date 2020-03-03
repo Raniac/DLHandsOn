@@ -52,7 +52,6 @@ namespace DLHandsOn {
 			// shape of output: N * output_size			
 			assert(input_shape == output_shape, "Invalid shape.");
 
-			// y = w��x + b
 			const DataType& input_data = input.getData();
 			DataType& output_data = output.getData();
 			output_data = input_data;

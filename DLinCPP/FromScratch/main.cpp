@@ -89,7 +89,7 @@ static void demoTrain() {
     const int input_size = 3;
     const int dense_in_size = 3;
     const int dense_out_size = 3;
-    const int output_size = 2;
+    const int output_size = 3;
 
     // data definition
     //input wrapper
@@ -138,10 +138,11 @@ static void demoTrain() {
 
 			// TODO: forward
 			network.forward(inputs, outputs);
+            printData("Output data: ", *outputs[0]);
 			// TODO: backward
-			network.backward(inputs, ground_truths);
+			// network.backward(inputs, ground_truths);
 			// TODO: update weights
-			network.updateWeights();
+			// network.updateWeights();
 
 			// TODO: get loss
 			const float loss = network.getLoss(ground_truths, outputs);
