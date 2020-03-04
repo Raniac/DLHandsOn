@@ -22,9 +22,16 @@ namespace DLHandsOn {
         const DataType& weights_grad_data = weights_grad.getData();
         DataType& weights_data = weights.getData();
 
-        for (size_t i = 0; i < weights_shape.getSize(0); i++) {
-            for (size_t j = 0; j < weights_shape.getSize(1); j++) {
-                weights_data[i * weights_shape.getSize(1) + j] -= alpha * weights_grad_data[i * weights_shape.getSize(1) + j];
+        if (weights_shape.getDims() == 2) { // update weights
+            for (size_t i = 0; i < weights_shape.getSize(0); i++) {
+                for (size_t j = 0; j < weights_shape.getSize(1); j++) {
+                    weights_data[i * weights_shape.getSize(1) + j] -= alpha * weights_grad_data[i * weights_shape.getSize(1) + j];
+                }
+            }
+        }
+        else if (weights_shape.getDims() == 1) { // update bias
+            for (size_t i = 0; i < weights_shape.getSize(0); i++) {
+                    weights_data[i] -= alpha * weights_grad_data[i];
             }
         }
     }

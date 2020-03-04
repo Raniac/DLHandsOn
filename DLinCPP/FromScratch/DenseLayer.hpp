@@ -35,6 +35,7 @@ namespace DLHandsOn {
         DataObject weights_grad;
         DataObject bias;
         DataObject bias_grad;
+        Optimizer* optimizer;
     };
 
     DenseLayer::DenseLayer() {}
@@ -249,5 +250,6 @@ namespace DLHandsOn {
                 }
             }
         }
+        updateWeights(optimizer, 0.0001);
     }
 } // namespace DLHandsOn

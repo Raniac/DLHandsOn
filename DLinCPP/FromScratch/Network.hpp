@@ -2,6 +2,7 @@
 #include "General.hpp"
 #include "DataObject.hpp"
 #include "Layer.hpp"
+#include "Optimizer.hpp"
 #include "LossFunction.hpp"
 
 namespace DLHandsOn {
@@ -11,9 +12,10 @@ namespace DLHandsOn {
 
         void setLoss(LossFunction* loss_function);
         float getLoss(const std::vector<DataObject*>& ground_truth, const std::vector<DataObject*>& predictions);
-
+        std::vector<DataObject*> getGrads(const std::vector<DataObject*>& ground_truth, const std::vector<DataObject*>& predictions);
+        
         void forward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& predictions);
-        void backward(const std::vector<DataObject*>& inputs, const std::vector<DataObject*>& ground_truth);
+        void backward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& predictions, const std::vector<DataObject*>& grads, Optimizer* optimizer);
         void updateWeights();
 
         bool saveModel(const std::string& model_path) const;
@@ -38,6 +40,11 @@ namespace DLHandsOn {
         return loss_function->computeLoss(ground_truth, predictions);
     }
 
+    // TODO: use loss function to get grads
+    std::vector<DataObject*> Network::getGrads(const std::vector<DataObject*>& ground_truth, const std::vector<DataObject*>& predictions) {
+        return loss_function->computeGrads(ground_truth, predictions);
+    }
+
     // TODO: set input size and output size for each layer separately
     void Network::forward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& predictions) {
         std::vector<DataObject*> temp_inputs = inputs;
@@ -50,8 +57,12 @@ namespace DLHandsOn {
     }
 
     // TODO: call backward function of each layer
-    void Network::backward(const std::vector<DataObject*>& inputs, const std::vector<DataObject*>& ground_truth) {}
-
-    // TODO: update hidden layers' weights
-    void Network::updateWeights() {}
+    void Network::backward(const std::vector<DataObject*>& inputs, std::vector<DataObject*>& predictions, const std::vector<DataObject*>& grads, Optimizer* optimizer) {
+        std::vector<DataObject*> input_diffs = inputs;
+        std::vector<DataObject*> output_diffs = grads;
+        for (size_t i = layers.size() - 1; i > 0; i--) {
+            layers[i]->backward(inputs, predictions, input_diffs, output_diffs);
+            output_diffs = input_diffs;
+        }
+    }
 } // namespace DLHandsOn

@@ -131,6 +131,8 @@ static void demoTrain() {
     DLHandsOn::MSELoss loss_funciton;
     network.setLoss(&loss_funciton);
 
+    DLHandsOn::Optimizer* optimizer;
+
     // training
     const int num_epochs = 2;
     for (size_t i = 0; i < num_epochs; i++) {
@@ -138,17 +140,19 @@ static void demoTrain() {
 
 			// TODO: forward
 			network.forward(inputs, outputs);
-            printData("Output data: ", *outputs[0]);
-			// TODO: backward
-			// network.backward(inputs, ground_truths);
-			// TODO: update weights
-			// network.updateWeights();
+            // printData("Output data: ", *outputs[0]);
 
 			// TODO: get loss
 			const float loss = network.getLoss(ground_truths, outputs);
-			std::cout << "Epoch[" << i <<"/" << num_epochs <<  "] " <<
-				"Batch[" << j << "/" << batch_size << "] " << 
+			std::cout << "Epoch[" << i+1 <<"/" << num_epochs <<  "] " <<
+				"Batch[" << j+1 << "/" << batch_size << "] " << 
 				"loss: " << loss << std::endl;
+
+            // TODO: get grads
+            const std::vector<DLHandsOn::DataObject*> grads = network.getGrads(ground_truths, outputs);
+            
+			// TODO: backward
+			network.backward(inputs, outputs, grads, optimizer);
         }
     }
 }
