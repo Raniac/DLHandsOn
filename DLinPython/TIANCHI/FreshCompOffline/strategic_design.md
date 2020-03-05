@@ -27,3 +27,8 @@
 - Feature Engineering:
   - Extract history of a 'bought' categroy as positive samples;
   - Extract the rest of the history a certain user as negative samples.
+
+03-05
+
+- 使用groupby根据用户ID和品类ID对数据集进行分组;
+- 将每个分组重组为一行特征，然后构建数据集;
