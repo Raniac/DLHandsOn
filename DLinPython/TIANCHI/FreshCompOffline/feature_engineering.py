@@ -1,11 +1,17 @@
 import pandas as pd
 import random
+import logging
+
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s')
 
 def extract_behavior_counts():
+    logging.info('Extraction begins.')
     users = pd.read_csv('data/tianchi_fresh_comp_train_user.csv')
     users_group = users.drop('user_geohash', axis=1).groupby(['user_id', 'item_category'])
     features_df = pd.DataFrame(columns=['user_id', 'buyOrNot', 'num_views', 'num_favorites', 'num_add2carts'])
+    logging.info('Data loaded.')
 
+    count = 0
     for user in users_group:
         behavior_counts = user[1]['behavior_type'].value_counts()
         num_views = behavior_counts.get(1, 0)
@@ -15,11 +21,17 @@ def extract_behavior_counts():
 
         new_row = [{'user_id': user[0][0], 'buyOrNot': buyOrNot, 'num_views': num_views, 'num_favorites': num_favorites, 'num_add2carts': num_add2carts}]
         features_df = features_df.append(new_row, ignore_index=True)
+        count += 1
+
+        if count % 100 == 0:
+            logging.info('Extracted %d features.' % count)
+            if count == 10000:
+                break
 
     features_df.to_csv('data/features/features_behavior_count.csv')
 
 def data_balancing():
-    data_file = 'data/features/features_test.csv'
+    data_file = 'data/features/features_behavior_count.csv'
     data_df = pd.read_csv(data_file)
     pos_samples = data_df.loc[data_df['buyOrNot'] == 1]
     neg_samples = data_df.loc[data_df['buyOrNot'] == 0]
@@ -32,7 +44,7 @@ def data_balancing():
         # do data balancing
         neg_samples_balanced = neg_samples.sample(n=num_pos)
         data_balanced = pd.concat([pos_samples, neg_samples_balanced], axis=0)
-        data_balanced.to_csv('data/features/features_test_balanced.csv')
+        data_balanced.to_csv('data/features/features_behavior_count_balanced.csv')
     
     return
 
