@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 import joblib
 
-def test():
+def test_train():
     data = pd.read_csv('data/features/features_behavior_count_balanced.csv')
     features = data[['num_views', 'num_favorites', 'num_add2carts']]
     label = data['buyOrNot']
@@ -44,18 +44,36 @@ def test_predict():
     predictions = model.predict(features)
     print(list(predictions)[:10])
 
-def train_behavior_prediction(data_path, model):
+def train_behavior_prediction(data_path, model_name, model_path):
+    """
+    :type data_path: str
+    :type model_name: str
+    :type model_path: str
+    """
     pass
 
-def predict_behavior():
+def predict_behavior(data_path, model_path):
+    """
+    :type data_path: str
+    :type model_path: str
+    """
     pass
 
-def train_item_prediction():
+def train_item_prediction(data_path, model_name, model_path):
+    """
+    :type data_path: str
+    :type model_name: str
+    :type model_path: str
+    """
     pass
 
-def predict_item():
+def predict_item(data_path, model_path):
+    """
+    :type data_path: str
+    :type model_path: str
+    """
     pass
 
 if __name__ == "__main__":
-    # test()
+    # test_train()
     test_predict()
