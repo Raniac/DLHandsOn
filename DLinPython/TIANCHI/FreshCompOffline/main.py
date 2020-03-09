@@ -3,6 +3,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
+import joblib
 
 def test():
     data = pd.read_csv('data/features/features_behavior_count_balanced.csv')
@@ -29,7 +30,21 @@ def test():
     cnf_specificity = tn / (tn + fp)
     print('The specificity is: %.2f' % cnf_specificity)
 
-def train_behavior_prediction():
+    joblib.dump(model, 'models/test.model')
+
+def test_predict():
+    data = pd.read_csv('data/features/features_behavior_count_balanced.csv')
+    features = data[['num_views', 'num_favorites', 'num_add2carts']]
+    label = data['buyOrNot']
+    print(list(label)[:10])
+    features = preprocessing.scale(features)
+
+    model = joblib.load('models/test.model')
+
+    predictions = model.predict(features)
+    print(list(predictions)[:10])
+
+def train_behavior_prediction(data_path, model):
     pass
 
 def predict_behavior():
@@ -42,4 +57,5 @@ def predict_item():
     pass
 
 if __name__ == "__main__":
-    test()
+    # test()
+    test_predict()
