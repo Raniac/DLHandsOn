@@ -59,7 +59,7 @@ def predict_behavior(data_path, model_path):
     """
     pass
 
-def train_item_prediction(data_path, model_name, model_path):
+def item_rank(data_path, model_name, model_path):
     """
     :type data_path: str
     :type model_name: str
