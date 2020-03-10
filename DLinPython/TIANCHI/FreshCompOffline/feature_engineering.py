@@ -48,6 +48,34 @@ def data_balancing():
     
     return
 
+def extract_item_rating():
+    logging.info('Extraction begins.')
+    users = pd.read_csv('data/tianchi_fresh_comp_train_user.csv')
+    items_group = users.drop('user_geohash', axis=1).groupby(['item_category', 'item_id'])
+    features_df = pd.DataFrame(columns=['item_category', 'item_id', 'rating'])
+    logging.info('Data loaded.')
+
+    count = 0
+    for item in items_group:
+        behavior_counts = item[1]['behavior_type'].value_counts()
+        num_views = behavior_counts.get(1, 0)
+        num_favorites = behavior_counts.get(2, 0)
+        num_add2carts = behavior_counts.get(3, 0)
+        num_buys = behavior_counts.get(4, 0)
+        rating = num_views * 0.1 + num_add2carts + num_favorites + num_buys * 5
+
+        new_row = [{'item_category': item[0][0], 'item_id': item[0][1], 'rating': rating}]
+        features_df = features_df.append(new_row, ignore_index=True)
+        count += 1
+
+        if count % 100 == 0:
+            logging.info('Extracted %d features.' % count)
+            if count == 100:
+                break
+
+    features_df.to_csv('data/features/features_item_rating.csv')
+
 if __name__ == "__main__":
     # extract_behavior_counts()
-    data_balancing()
+    extract_item_rating()
+    # data_balancing()
