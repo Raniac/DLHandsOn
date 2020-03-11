@@ -99,6 +99,10 @@ def item_rank(data_path):
     """
     data = pd.read_csv(data_path)
     # TODO rank items according to their ratings
+    # DataFrame.apply: https://blog.csdn.net/Evan_Blog/article/details/82787984
+    # data = data.groupby(['item_category'], sort=False).apply(lambda x: x.sort_values('rating', ascending=False)).reset_index(drop=True)
+    data = data.sort_values(['item_category', 'rating'], ascending=False)
+    print(data)
 
 def predict_item(data_path):
     """
@@ -109,4 +113,5 @@ def predict_item(data_path):
 
 if __name__ == "__main__":
     # test_train()
-    test_predict()
+    # test_predict()
+    item_rank('data/features/features_item_rating.csv')
