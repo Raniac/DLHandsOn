@@ -8,7 +8,7 @@ def extract_behavior_counts():
     logging.info('Extraction begins.')
     users = pd.read_csv('data/tianchi_fresh_comp_train_user.csv')
     users_group = users.drop('user_geohash', axis=1).groupby(['user_id', 'item_category'])
-    features_df = pd.DataFrame(columns=['user_id', 'buyOrNot', 'num_views', 'num_favorites', 'num_add2carts'])
+    features_df = pd.DataFrame(columns=['user_id', 'item_category', 'buyOrNot', 'num_views', 'num_favorites', 'num_add2carts'])
     logging.info('Data loaded.')
 
     count = 0
@@ -19,7 +19,7 @@ def extract_behavior_counts():
         num_add2carts = behavior_counts.get(3, 0)
         buyOrNot = 1 if behavior_counts.get(4, 0) else 0
 
-        new_row = [{'user_id': user[0][0], 'buyOrNot': buyOrNot, 'num_views': num_views, 'num_favorites': num_favorites, 'num_add2carts': num_add2carts}]
+        new_row = [{'user_id': user[0][0], 'item_category': user[0][1], 'buyOrNot': buyOrNot, 'num_views': num_views, 'num_favorites': num_favorites, 'num_add2carts': num_add2carts}]
         features_df = features_df.append(new_row, ignore_index=True)
         count += 1
 
@@ -28,7 +28,7 @@ def extract_behavior_counts():
             if count == 10000:
                 break
 
-    features_df.to_csv('data/features/features_behavior_count.csv')
+    features_df.to_csv('data/features/features_behavior_count.csv', index=False)
 
 def data_balancing():
     data_file = 'data/features/features_behavior_count.csv'
@@ -44,7 +44,7 @@ def data_balancing():
         # do data balancing
         neg_samples_balanced = neg_samples.sample(n=num_pos)
         data_balanced = pd.concat([pos_samples, neg_samples_balanced], axis=0)
-        data_balanced.to_csv('data/features/features_behavior_count_balanced.csv')
+        data_balanced.to_csv('data/features/features_behavior_count_balanced.csv', index=False)
     
     return
 
@@ -73,7 +73,7 @@ def extract_item_rating():
             if count == 100:
                 break
 
-    features_df.to_csv('data/features/features_item_rating.csv')
+    features_df.to_csv('data/features/features_item_rating.csv', index=False)
 
 if __name__ == "__main__":
     # extract_behavior_counts()
