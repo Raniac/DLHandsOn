@@ -46,8 +46,8 @@ def test_predict():
     predictions_df = pd.DataFrame({
         'user_id': data['user_id'],
         'item_category': data['item_category'],
-        'predictions': predictions[:, 1] > 0.5,
-        'predict_prob': predictions[:, 1]
+        'prediction': predictions[:, 1] > 0.5,
+        'predict_proba': predictions[:, 1]
     })
     predictions_df.to_csv('data/test_predictions.csv', index=False)
 
@@ -103,12 +103,12 @@ def predict_behavior(data_path, model_path, predict_path):
     predictions_df = pd.DataFrame({
         'user_id': data['user_id'],
         'item_category': data['item_category'],
-        'predictions': predictions[:, 1] > 0.5,
-        'predict_prob': predictions[:, 1]
+        'prediction': predictions[:, 1] > 0.5,
+        'predict_proba': predictions[:, 1]
     })
     predictions_df.to_csv(predict_path, index=False)
 
-def item_rank(data_path):
+def item_rank(data_path, rank_path):
     """
     :type data_path: str
     """
@@ -119,14 +119,20 @@ def item_rank(data_path):
     data = data.groupby(['item_category'], sort=False).apply(lambda x: x[x.rating == x.rating.max()]).reset_index(drop=True)
     data.to_csv('data/features/features_item_rank.csv', index=False)
 
-def predict_item(data_path):
+def predict_item(predict_path, rank_path):
     """
     :type data_path: str
     """
     # TODO predict item using the ranking of its category
-    pass
+    predictions = pd.read_csv(predict_path)
+    predictions = predictions[predictions['prediction'] == True].groupby(['user_id'], sort=False).apply(lambda x: x[x.predict_proba == x.predict_proba.max()]).reset_index(drop=True)
+    print(predictions)
+    ranking = pd.read_csv(rank_path)
+    data = predictions[['user_id', 'item_category', ]].join(ranking.set_index('item_category'), on='item_category', how='inner')
+    print(data)
 
 if __name__ == "__main__":
     # test_train()
     # test_predict()
-    item_rank('data/features/features_item_rating.csv')
+    # item_rank('data/features/features_item_rating.csv')
+    predict_item('data/test_predictions.csv', 'data/features/features_item_rank.csv')
