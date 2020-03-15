@@ -25,10 +25,11 @@ def extract_behavior_counts():
 
         if count % 100 == 0:
             logging.info('Extracted %d features.' % count)
-            if count == 10000:
-                break
+            if count % 1e5 == 0:
+                features_df.to_csv('data/features/features_behavior_counts_all_' + str(count) + '.csv', index=False)
+                features_df = pd.DataFrame(columns=['user_id', 'item_category', 'buyOrNot', 'num_views', 'num_favorites', 'num_add2carts'])                
 
-    features_df.to_csv('data/features/features_behavior_count.csv', index=False)
+    logging.info('All done.')
 
 def data_balancing():
     data_file = 'data/features/features_behavior_count.csv'
@@ -76,6 +77,6 @@ def extract_item_rating():
     features_df.to_csv('data/features/features_item_rating.csv', index=False)
 
 if __name__ == "__main__":
-    # extract_behavior_counts()
-    extract_item_rating()
+    extract_behavior_counts()
+    # extract_item_rating()
     # data_balancing()
