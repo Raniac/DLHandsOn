@@ -61,32 +61,31 @@ def train_behavior_prediction(data_paths, model_name, model_path):
     :type model_path: str
     """
     logging.info('Training begins.')
-    
-    data = pd.read_csv(data_paths[0])
-    for i in range(1, len(data_paths)):
-        tmp = pd.read_csv(data_paths[i])
-        data = pd.concat([data, tmp], axis=0)
-    features = data[['num_views', 'num_favorites', 'num_add2carts']]
-    label = data['buyOrNot']
-    logging.info('Data loaded.')
-
-    features = preprocessing.scale(features)
-
-    train_X, test_X, train_y, test_y = train_test_split(features, label, random_state=0)
 
     model = SVC(C=1, kernel='linear', probability=True)
+    
+    for i in range(len(data_paths)):
+        logging.info('Training on data {0:02d}'.format(i+1))
+        data = pd.read_csv(data_paths[i])
+        features = data[['num_views', 'num_favorites', 'num_add2carts']]
+        label = data['buyOrNot']
+        logging.info('Data loaded.')
 
-    model.fit(train_X, train_y)
-    predictions = model.predict(test_X)
+        features = preprocessing.scale(features)
 
-    tn, fp, fn, tp = confusion_matrix(test_y, predictions).ravel()
-    logging.info('The confusion matrix is: %d TN, %d FP, %d FN, %d TP' % (tn, fp, fn, tp))
-    cnf_accuracy = (tn + tp) / (tn + fp + fn + tp)
-    logging.info('The accuracy is: %.2f' % cnf_accuracy)
-    cnf_sensitivity = tp / (tp + fn)
-    logging.info('The sensitivity is: %.2f' % cnf_sensitivity)
-    cnf_specificity = tn / (tn + fp)
-    logging.info('The specificity is: %.2f' % cnf_specificity)
+        train_X, test_X, train_y, test_y = train_test_split(features, label, random_state=0)
+
+        model.fit(train_X, train_y)
+        predictions = model.predict(test_X)
+
+        tn, fp, fn, tp = confusion_matrix(test_y, predictions).ravel()
+        logging.info('The confusion matrix is: %d TN, %d FP, %d FN, %d TP' % (tn, fp, fn, tp))
+        cnf_accuracy = (tn + tp) / (tn + fp + fn + tp)
+        logging.info('The accuracy is: %.2f' % cnf_accuracy)
+        cnf_sensitivity = tp / (tp + fn)
+        logging.info('The sensitivity is: %.2f' % cnf_sensitivity)
+        cnf_specificity = tn / (tn + fp)
+        logging.info('The specificity is: %.2f' % cnf_specificity)
 
     joblib.dump(model, model_path)
     logging.info('Done. Model saved in %s' % model_path)
@@ -146,6 +145,6 @@ if __name__ == "__main__":
 
     data_paths = []
     for i in range(1, 18):
-        data_paths.append('data/features/behavior_counts_all/features_behavior_counts_all_{0:03d}.csv'.format(i))
+        data_paths.append('data/features/behavior_counts_all/features_behavior_counts_all_{0:03d}_balanced.csv'.format(i))
         print(data_paths)
     train_behavior_prediction(data_paths, '', 'models/exp_200315.model')
