@@ -4,6 +4,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 import joblib
+import logging
+
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s')
 
 def test_train():
     data = pd.read_csv('data/features/features_behavior_count_balanced.csv')
@@ -51,18 +54,21 @@ def test_predict():
     })
     predictions_df.to_csv('data/test_predictions.csv', index=False)
 
-def train_behavior_prediction(data_path, model_name, model_path):
+def train_behavior_prediction(data_paths, model_name, model_path):
     """
     :type data_path: str
     :type model_name: str
     :type model_path: str
     """
+    logging.info('Training begins.')
     
-    data = pd.read_csv(data_path)
+    data = pd.read_csv(data_paths[0])
+    for i in range(1, len(data_paths)):
+        tmp = pd.read_csv(data_paths[i])
+        data = pd.concat([data, tmp], axis=0)
     features = data[['num_views', 'num_favorites', 'num_add2carts']]
     label = data['buyOrNot']
-    print(features)
-    print(label)
+    logging.info('Data loaded.')
 
     features = preprocessing.scale(features)
 
@@ -74,15 +80,16 @@ def train_behavior_prediction(data_path, model_name, model_path):
     predictions = model.predict(test_X)
 
     tn, fp, fn, tp = confusion_matrix(test_y, predictions).ravel()
-    print('The confusion matrix is:', (tn, fp, fn, tp))
+    logging.info('The confusion matrix is: %d TN, %d FP, %d FN, %d TP' % (tn, fp, fn, tp))
     cnf_accuracy = (tn + tp) / (tn + fp + fn + tp)
-    print('The accuracy is: %.2f' % cnf_accuracy)
+    logging.info('The accuracy is: %.2f' % cnf_accuracy)
     cnf_sensitivity = tp / (tp + fn)
-    print('The sensitivity is: %.2f' % cnf_sensitivity)
+    logging.info('The sensitivity is: %.2f' % cnf_sensitivity)
     cnf_specificity = tn / (tn + fp)
-    print('The specificity is: %.2f' % cnf_specificity)
+    logging.info('The specificity is: %.2f' % cnf_specificity)
 
     joblib.dump(model, model_path)
+    logging.info('Done. Model saved in %s' % model_path)
 
 def predict_behavior(data_path, model_path, predict_path):
     """
@@ -135,4 +142,10 @@ if __name__ == "__main__":
     # test_train()
     # test_predict()
     # item_rank('data/features/features_item_rating.csv')
-    predict_item('data/test_predictions.csv', 'data/features/features_item_rank.csv')
+    # predict_item('data/test_predictions.csv', 'data/features/features_item_rank.csv')
+
+    data_paths = []
+    for i in range(1, 18):
+        data_paths.append('data/features/behavior_counts_all/features_behavior_counts_all_{0:03d}.csv'.format(i))
+        print(data_paths)
+    train_behavior_prediction(data_paths, '', 'models/exp_200315.model')

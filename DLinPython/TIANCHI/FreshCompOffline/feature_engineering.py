@@ -26,13 +26,12 @@ def extract_behavior_counts():
         if count % 100 == 0:
             logging.info('Extracted %d features.' % count)
             if count % 1e5 == 0:
-                features_df.to_csv('data/features/features_behavior_counts_all_' + str(count) + '.csv', index=False)
+                features_df.to_csv('data/features/behavior_counts_all/features_behavior_counts_all_{0:03d}.csv'.format(int(count // 1e5)), index=False)
                 features_df = pd.DataFrame(columns=['user_id', 'item_category', 'buyOrNot', 'num_views', 'num_favorites', 'num_add2carts'])                
 
     logging.info('All done.')
 
-def data_balancing():
-    data_file = 'data/features/features_behavior_count.csv'
+def data_balancing(data_file):
     data_df = pd.read_csv(data_file)
     pos_samples = data_df.loc[data_df['buyOrNot'] == 1]
     neg_samples = data_df.loc[data_df['buyOrNot'] == 0]
@@ -45,7 +44,7 @@ def data_balancing():
         # do data balancing
         neg_samples_balanced = neg_samples.sample(n=num_pos)
         data_balanced = pd.concat([pos_samples, neg_samples_balanced], axis=0)
-        data_balanced.to_csv('data/features/features_behavior_count_balanced.csv', index=False)
+        data_balanced.to_csv(data_file[:-4] + '_balanced.csv', index=False)
     
     return
 
@@ -77,6 +76,6 @@ def extract_item_rating():
     features_df.to_csv('data/features/features_item_rating.csv', index=False)
 
 if __name__ == "__main__":
-    extract_behavior_counts()
+    # extract_behavior_counts()
     # extract_item_rating()
-    # data_balancing()
+    data_balancing('data/features/behavior_counts_all/features_behavior_counts_all_017.csv')
