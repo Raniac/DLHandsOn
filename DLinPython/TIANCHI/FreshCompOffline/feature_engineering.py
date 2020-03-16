@@ -27,7 +27,9 @@ def extract_behavior_counts():
             logging.info('Extracted %d features.' % count)
             if count % 1e5 == 0:
                 features_df.to_csv('data/features/behavior_counts_all/features_behavior_counts_all_{0:03d}.csv'.format(int(count // 1e5)), index=False)
-                features_df = pd.DataFrame(columns=['user_id', 'item_category', 'buyOrNot', 'num_views', 'num_favorites', 'num_add2carts'])                
+                features_df = pd.DataFrame(columns=['user_id', 'item_category', 'buyOrNot', 'num_views', 'num_favorites', 'num_add2carts'])
+
+    features_df.to_csv('data/features/behavior_counts_all/features_behavior_counts_all_{0:03d}.csv'.format(int(count // 1e5) + 1), index=False)
 
     logging.info('All done.')
 
@@ -70,12 +72,15 @@ def extract_item_rating():
 
         if count % 100 == 0:
             logging.info('Extracted %d features.' % count)
-            if count == 100:
-                break
+            if count % 1e5 == 0:
+                features_df.to_csv('data/features/item_rating_all/features_item_rating_all_{0:03d}.csv'.format(int(count // 1e5)), index=False)
+                features_df = pd.DataFrame(columns=['item_category', 'item_id', 'rating'])
 
-    features_df.to_csv('data/features/features_item_rating.csv', index=False)
+    features_df.to_csv('data/features/item_rating_all/features_item_rating_all_{0:03d}.csv'.format(int(count // 1e5) + 1), index=False)
+
+    logging.info('All done.')
 
 if __name__ == "__main__":
     # extract_behavior_counts()
-    # extract_item_rating()
-    data_balancing('data/features/behavior_counts_all/features_behavior_counts_all_017.csv')
+    extract_item_rating()
+    # data_balancing('data/features/behavior_counts_all/features_behavior_counts_all_017.csv')

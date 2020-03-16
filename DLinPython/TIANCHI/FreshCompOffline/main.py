@@ -105,7 +105,6 @@ def predict_behavior(data_path, model_path, predict_path):
     model = joblib.load(model_path)
 
     predictions = model.predict_proba(features)
-    # TODO output predictions to a csv file
     predictions_df = pd.DataFrame({
         'user_id': data['user_id'],
         'item_category': data['item_category'],
@@ -134,17 +133,17 @@ def predict_item(predict_path, rank_path):
     predictions = predictions[predictions['prediction'] == True].groupby(['user_id'], sort=False).apply(lambda x: x[x.predict_proba == x.predict_proba.max()]).reset_index(drop=True)
     print(predictions)
     ranking = pd.read_csv(rank_path)
-    data = predictions[['user_id', 'item_category', ]].join(ranking.set_index('item_category'), on='item_category', how='inner')
-    print(data)
+    data = predictions[['user_id', 'item_category']].join(ranking.set_index('item_category'), on='item_category', how='inner')
+    print(data[['user_id', 'item_id']])
 
 if __name__ == "__main__":
     # test_train()
     # test_predict()
     # item_rank('data/features/features_item_rating.csv')
-    # predict_item('data/test_predictions.csv', 'data/features/features_item_rank.csv')
+    predict_item('data/test_predictions.csv', 'data/features/test/features_item_rank.csv')
 
-    data_paths = []
-    for i in range(1, 18):
-        data_paths.append('data/features/behavior_counts_all/features_behavior_counts_all_{0:03d}_balanced.csv'.format(i))
-        print(data_paths)
-    train_behavior_prediction(data_paths, '', 'models/exp_200315.model')
+    # data_paths = []
+    # for i in range(1, 18):
+    #     data_paths.append('data/features/behavior_counts_all/features_behavior_counts_all_{0:03d}_balanced.csv'.format(i))
+    #     print(data_paths)
+    # train_behavior_prediction(data_paths, '', 'models/exp_200315.model')
