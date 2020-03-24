@@ -60,6 +60,7 @@ torch.cuda.manual_seed_all(SEED)
 with open('data/test_dataset_0227.pkl', 'rb') as f:
     dataset = pickle.load(f)
 
+print(dataset)
 loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 if torch.cuda.is_available():
@@ -79,3 +80,7 @@ except:
 extracted_features = extract_feature(device, model, loader, len(dataset))
 print(len(extracted_features))
 print(extracted_features[0])
+extracted_features = list(map(lambda x: x.numpy(), extracted_features))
+
+with open('data/test_features_0324.pkl', 'wb') as f:
+    pickle.dump(extracted_features, f)
